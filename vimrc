@@ -1,7 +1,14 @@
+"  __  __        __     _____ __  __ ____   ____
+" |  \/  |_   _  \ \   / /_ _|  \/  |  _ \ / ___|
+" | |\/| | | | |  \ \ / / | || |\/| | |_) | |
+" | |  | | |_| |   \ V /  | || |  | |  _ <| |___
+" |_|  |_|\__, |    \_/  |___|_|  |_|_| \_\\____|
+"         |___/
+
 let mapleader=" "
 syntax on
 set number
-set norelativenumber
+set relativenumber
 set cursorline
 set wrap
 set showcmd
@@ -41,7 +48,15 @@ set laststatus=2
 set autochdir
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
+map <LEADER>rc :e ~/.vim/vimrc<CR>
 
+set scrolloff=5
+
+map <LEADER>fd /\(\<\w\+\>\)\_s*\1
+
+map <LEADER>sc :set spell!<CR> 
+
+map <LEADER><LEADER> <Esc>/<++><CR>:nohlsearch<CR>c4l 
 
 noremap = nzz
 noremap - Nzz
@@ -79,56 +94,6 @@ map tr :+tabnext<CR>
 map sv <C-w>t<C-w>H
 map sh <C-w>t<C-w>K
 
-inoremap ( ()<LEFT>
-inoremap [ []<LEFT>
-inoremap { {}<LEFT>
-inoremap " ""<LEFT>
-inoremap ' ''<LEFT>
-inoremap < <><LEFT>
-
-function! RemovePairs()
-    let s:line = getline(".")
-    let s:previous_char = s:line[col(".")-1]
-
-    if index(["(","[","{"],s:previous_char) != -1
-        let l:original_pos = getpos(".")
-        execute "normal %"
-        let l:new_pos = getpos(".")
-        " only right (
-        if l:original_pos == l:new_pos
-            execute "normal! a\<BS>"
-            return
-        end
-
-        let l:line2 = getline(".")
-        if len(l:line2) == col(".")
-            execute "normal! v%xa"
-        else
-            execute "normal! v%xi"
-        end
-    else
-        execute "normal! a\<BS>"
-    end
-endfunction
-
-function! RemoveNextDoubleChar(char)
-    let l:line = getline(".")
-    let l:next_char = l:line[col(".")]
-
-    if a:char == l:next_char
-        execute "normal! l"
-    else
-        execute "normal! i" . a:char . ""
-    end
-endfunction
-
-inoremap <BS> <ESC>:call RemovePairs()<CR>a
-inoremap ) <ESC>:call RemoveNextDoubleChar(')')<CR>a
-inoremap ] <ESC>:call RemoveNextDoubleChar(']')<CR>a
-inoremap } <ESC>:call RemoveNextDoubleChar('}')<CR>a
-inoremap > <ESC>:call RemoveNextDoubleChar('>')<CR>a
-
-
 
 
 
@@ -137,66 +102,13 @@ call plug#begin('~/.vim/plugged')
 Plug 'vim-airline/vim-airline'
 Plug 'connorholyday/vim-snazzy'
 
+Plug 'preservim/nerdtree'
 
-
-" File navigation
-Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
-Plug 'Xuyuanp/nerdtree-git-plugin'
-
-" Taglist
-Plug 'majutsushi/tagbar', { 'on': 'TagbarOpenAutoClose' }
-
-" Error checking
 Plug 'w0rp/ale'
 
-" Auto Complete
-Plug 'Valloric/YouCompleteMe'
+Plug 'majutsushi/tagbar'
 
-" Undo Tree
- Plug 'mbbill/undotree/'
-
-" Other visual enhancement
-Plug 'nathanaelkane/vim-indent-guides'
-Plug 'itchyny/vim-cursorword'
-
-" Git
-Plug 'rhysd/conflict-marker.vim'
-Plug 'tpope/vim-fugitive'
-Plug 'mhinz/vim-signify'
-Plug 'gisphm/vim-gitignore', { 'for': ['gitignore', 'vim-plug'] }
-
-" HTML, CSS, JavaScript, PHP, JSON, etc.
-Plug 'elzr/vim-json'
-Plug 'hail2u/vim-css3-syntax'
-Plug 'spf13/PIV', { 'for' :['php', 'vim-plug'] }
-Plug 'gko/vim-coloresque', { 'for': ['vim-plug', 'php', 'html', 'javascript', 'css', 'less'] }
-Plug 'pangloss/vim-javascript', { 'for' :['javascript', 'vim-plug'] }
-Plug 'mattn/emmet-vim'
-
-" Python
-Plug 'vim-scripts/indentpython.vim'
-
-" Markdown
-Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install_sync() }, 'for' :['markdown', 'vim-plug'] }
-Plug 'dhruvasagar/vim-table-mode', { 'on': 'TableModeToggle' }
-Plug 'vimwiki/vimwiki'
-
-" Bookmarks
-Plug 'kshenoy/vim-signature'
-
-" Other useful utilities
-Plug 'terryma/vim-multiple-cursors'
-Plug 'junegunn/goyo.vim' " distraction free writing mode
-Plug 'tpope/vim-surround' " type ysks' to wrap the word with '' or type cs'` to change 'word' to `word`
-Plug 'godlygeek/tabular' " type ;Tabularize /= to align the =
-Plug 'gcmt/wildfire.vim' " in Visual mode, type i' to select all text in '', or type i) i] i} ip
-Plug 'scrooloose/nerdcommenter' " in <space>cc to comment a line
-
-" Dependencies
-Plug 'MarcWeber/vim-addon-mw-utils'
-Plug 'kana/vim-textobj-user'
-Plug 'fadein/vim-FIGlet'
-
+Plug 'ycm-core/YouCompleteMe'
 
 call plug#end()
 
@@ -204,6 +116,12 @@ call plug#end()
 let g:SnazzyTransparent = 1
 color snazzy
 
+"===================
+"====NERDTree=======
+"===================
+map ff :NERDTreeToggle<CR>
 
-
-
+"===================                                                                 
+"===YouCompleteMe===
+"===================
+let g:ycm_global_ycm_extra_conf='~/.vim/.ycm_extra_conf.py'
